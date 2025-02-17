@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+.next/
+build/
+dist/
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
+
+# System
+.DS_Store
