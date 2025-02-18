@@ -1,16 +1,22 @@
 "use client";
 
-import Layout from "@/components/layout/Layout";
-import Map from "@/components/map/Map";
 import { useState } from "react";
-import { City } from "@/types";
+import { Map } from "../components/Map";
+import { Sidebar } from "../components/Sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
-export default function Home() {
-  const [selectedCity, setSelectedCity] = useState<City | null>(null);
+export default function Page() {
+  const [selectedCity, setSelectedCity] = useState("London");
 
   return (
-    <Layout>
-      <Map selectedCity={selectedCity} />
-    </Layout>
+    <SidebarProvider>
+      <div className="flex h-screen">
+        <Sidebar
+          selectedCity={selectedCity}
+          onCitySelect={(city) => setSelectedCity(city.name)}
+        />
+        <Map />
+      </div>
+    </SidebarProvider>
   );
 }
