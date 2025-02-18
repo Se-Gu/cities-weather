@@ -9,17 +9,6 @@ export function useCities() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const data = await citiesApi.getAll();
-        setCities(data);
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to fetch cities");
-        setLoading(false);
-      }
-    };
-
     const fetchSelectedCities = async () => {
       try {
         const data = await citiesApi.getSelectedCities();
@@ -28,8 +17,6 @@ export function useCities() {
         console.error("Failed to fetch selected cities:", err);
       }
     };
-
-    fetchCities();
     fetchSelectedCities();
   }, []);
 

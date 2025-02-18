@@ -12,10 +12,10 @@ export default function CityItem({ city }: CityItemProps) {
     <div
       className={`flex justify-between items-center px-4 py-2 border ${
         city.selected ? "bg-blue-100" : "bg-white"
-      } rounded-lg cursor-pointer`}
+      } rounded-lg cursor-pointer hover:bg-gray-100`}
       onClick={() => toggleCitySelection(city.id)}
     >
-      <span>{city.name}</span>
+      <span className="text-gray-700">{city.name}</span>
       {city.selected && <span className="text-green-500 font-bold">✓</span>}
     </div>
   );

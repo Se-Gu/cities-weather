@@ -15,7 +15,6 @@ export default function AddCityButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState<CityOption | null>(null);
 
-  // ✅ Use citiesApi to fetch cities properly
   const fetchCities = debounce(async (inputValue: string, callback) => {
     if (!inputValue) {
       callback([]);
@@ -25,7 +24,6 @@ export default function AddCityButton() {
     try {
       const data = await citiesApi.searchCities(inputValue);
 
-      // ✅ Ensure correct mapping
       const cityOptions = data.map((city) => ({
         value: city.id.toString(),
         label: city.name,
@@ -33,10 +31,8 @@ export default function AddCityButton() {
         longitude: city.longitude,
       }));
 
-      console.log("Mapped City Options:", cityOptions); // Debugging log
-
       if (Array.isArray(cityOptions) && cityOptions.length > 0) {
-        callback(cityOptions); // ✅ Ensure callback receives correct data
+        callback(cityOptions);
       } else {
         console.error(
           "Error: cityOptions is empty or not an array",
@@ -67,7 +63,7 @@ export default function AddCityButton() {
             <AsyncSelect
               value={selectedCity}
               onChange={setSelectedCity}
-              loadOptions={fetchCities} // ✅ Ensure correct fetch function is used
+              loadOptions={fetchCities}
               placeholder="Search for a city..."
               className="w-full"
               cacheOptions
