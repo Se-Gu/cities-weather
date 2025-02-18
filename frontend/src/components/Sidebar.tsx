@@ -1,11 +1,6 @@
 "use client";
 import { Plus } from "lucide-react";
 
-import {
-  Sidebar as SidebarComponent,
-  SidebarContent,
-} from "@/components/ui/sidebar";
-
 const cities = [
   { id: 1, name: "New York", coordinates: [-74.006, 40.7128] },
   { id: 2, name: "London", coordinates: [-0.1276, 51.5074] },
@@ -21,8 +16,9 @@ interface SidebarProps {
 
 export function Sidebar({ selectedCity, onCitySelect }: SidebarProps) {
   return (
-    <SidebarComponent className="flex w-[320px] flex-col border-r-0">
+    <div className="flex w-[320px] flex-col border-r border-gray-200">
       <div className="flex flex-col">
+        {/* Header */}
         <div className="flex h-32 items-center justify-between px-4">
           <div className="flex items-center justify-between w-full">
             <h2 className="text-xl font-semibold text-[#2E3138]">Cities</h2>
@@ -32,7 +28,9 @@ export function Sidebar({ selectedCity, onCitySelect }: SidebarProps) {
             </button>
           </div>
         </div>
-        <SidebarContent className="flex-1 overflow-auto">
+
+        {/* Content */}
+        <div className="flex-1 overflow-auto">
           <div className="flex flex-col">
             {cities.map((city) => (
               <button
@@ -55,8 +53,8 @@ export function Sidebar({ selectedCity, onCitySelect }: SidebarProps) {
               </button>
             ))}
           </div>
-        </SidebarContent>
+        </div>
       </div>
-    </SidebarComponent>
+    </div>
   );
 }

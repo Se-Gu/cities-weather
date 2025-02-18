@@ -4,17 +4,19 @@ import * as React from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-export function Map() {
+interface MapProps {
+  lat: number;
+  lng: number;
+}
+
+export function Map({ lat, lng }: MapProps) {
   const mapContainer = React.useRef<HTMLDivElement>(null);
   const map = React.useRef<maplibregl.Map | null>(null);
-  const [lng] = React.useState(-0.1276);
-  const [lat] = React.useState(51.5074);
-  const [zoom] = React.useState(11);
 
   React.useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
-    // Initialize the map
+    // Initialize the map at max zoomed out
     map.current = new maplibregl.Map({
       container: mapContainer.current,
       style: {
@@ -38,7 +40,7 @@ export function Map() {
         ],
       },
       center: [lng, lat],
-      zoom: zoom,
+      zoom: 0, // Fully zoomed out
     });
 
     // Add navigation controls
@@ -50,13 +52,22 @@ export function Map() {
       "bottom-right"
     );
 
-    // Add marker for the current location
+    // Add marker for the initial location
     new maplibregl.Marker({
       color: "#4134F1",
     })
       .setLngLat([lng, lat])
       .addTo(map.current);
-  }, [lng, lat, zoom]);
+  }, []);
+
+  // Update map center when lat/lng props change
+  React.useEffect(() => {
+    if (map.current) {
+      map.current.panTo([lng, lat], {
+        duration: 1000, // Smooth transition
+      });
+    }
+  }, [lat, lng]);
 
   return (
     <div className="relative flex-1">
