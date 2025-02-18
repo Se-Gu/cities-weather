@@ -1,30 +1,54 @@
 import { useState } from "react";
 import { PlusIcon } from "@heroicons/react/24/solid";
+import AsyncSelect from "react-select/async";
+import debounce from "lodash.debounce";
 import { citiesApi } from "@/api/cities";
+
+type CityOption = {
+  value: string;
+  label: string;
+  latitude: number;
+  longitude: number;
+};
 
 export default function AddCityButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newCity, setNewCity] = useState({
-    name: "",
-    latitude: "",
-    longitude: "",
-  });
+  const [selectedCity, setSelectedCity] = useState<CityOption | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await citiesApi.addCity({
-        name: newCity.name,
-        latitude: parseFloat(newCity.latitude),
-        longitude: parseFloat(newCity.longitude),
-      });
-      setIsModalOpen(false);
-      // Trigger refresh of city list
-      window.location.reload();
-    } catch (error) {
-      console.error("Failed to add city:", error);
+  // ✅ Use citiesApi to fetch cities properly
+  const fetchCities = debounce(async (inputValue: string, callback) => {
+    if (!inputValue) {
+      callback([]);
+      return;
     }
-  };
+
+    try {
+      const data = await citiesApi.searchCities(inputValue);
+
+      // ✅ Ensure correct mapping
+      const cityOptions = data.map((city) => ({
+        value: city.id.toString(),
+        label: city.name,
+        latitude: city.latitude,
+        longitude: city.longitude,
+      }));
+
+      console.log("Mapped City Options:", cityOptions); // Debugging log
+
+      if (Array.isArray(cityOptions) && cityOptions.length > 0) {
+        callback(cityOptions); // ✅ Ensure callback receives correct data
+      } else {
+        console.error(
+          "Error: cityOptions is empty or not an array",
+          cityOptions
+        );
+        callback([]);
+      }
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+      callback([]);
+    }
+  }, 300);
 
   return (
     <>
@@ -40,67 +64,15 @@ export default function AddCityButton() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-96">
             <h2 className="text-xl font-semibold mb-4">Add New City</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  City Name
-                </label>
-                <input
-                  type="text"
-                  value={newCity.name}
-                  onChange={(e) =>
-                    setNewCity({ ...newCity, name: e.target.value })
-                  }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Latitude
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  value={newCity.latitude}
-                  onChange={(e) =>
-                    setNewCity({ ...newCity, latitude: e.target.value })
-                  }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Longitude
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  value={newCity.longitude}
-                  onChange={(e) =>
-                    setNewCity({ ...newCity, longitude: e.target.value })
-                  }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-                >
-                  Add City
-                </button>
-              </div>
-            </form>
+            <AsyncSelect
+              value={selectedCity}
+              onChange={setSelectedCity}
+              loadOptions={fetchCities} // ✅ Ensure correct fetch function is used
+              placeholder="Search for a city..."
+              className="w-full"
+              cacheOptions
+              defaultOptions
+            />
           </div>
         </div>
       )}

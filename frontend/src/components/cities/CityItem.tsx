@@ -1,24 +1,22 @@
 import { City } from "@/types";
-import { MapPinIcon } from "@heroicons/react/24/solid";
+import { useCities } from "@/hooks/useCities";
 
-interface CityItemProps {
+type CityItemProps = {
   city: City;
-  isSelected: boolean;
-  onClick: () => void;
-}
+};
 
-export default function CityItem({ city, isSelected, onClick }: CityItemProps) {
+export default function CityItem({ city }: CityItemProps) {
+  const { toggleCitySelection } = useCities();
+
   return (
-    <button
-      onClick={onClick}
-      className={`w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-100 transition-colors ${
-        isSelected ? "text-blue-600 bg-blue-50 hover:bg-blue-50" : ""
-      }`}
+    <div
+      className={`flex justify-between items-center px-4 py-2 border ${
+        city.selected ? "bg-blue-100" : "bg-white"
+      } rounded-lg cursor-pointer`}
+      onClick={() => toggleCitySelection(city.id)}
     >
-      <MapPinIcon
-        className={`w-5 h-5 ${isSelected ? "text-blue-600" : "text-gray-400"}`}
-      />
-      {city.name}
-    </button>
+      <span>{city.name}</span>
+      {city.selected && <span className="text-green-500 font-bold">✓</span>}
+    </div>
   );
 }

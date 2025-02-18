@@ -4,7 +4,7 @@ import { citiesApi } from "@/api/cities";
 
 export function useCities() {
   const [cities, setCities] = useState<City[]>([]);
-  const [selectedCity, setSelectedCity] = useState<City | null>(null);
+  const [selectedCities, setSelectedCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,18 +20,46 @@ export function useCities() {
       }
     };
 
+    const fetchSelectedCities = async () => {
+      try {
+        const data = await citiesApi.getSelectedCities();
+        setSelectedCities(data);
+      } catch (err) {
+        console.error("Failed to fetch selected cities:", err);
+      }
+    };
+
     fetchCities();
+    fetchSelectedCities();
   }, []);
 
-  const selectCity = (city: City) => {
-    setSelectedCity(city);
+  const toggleCitySelection = async (cityId: number) => {
+    try {
+      const updatedCity = await citiesApi.toggleCitySelection(cityId);
+
+      setCities((prev) =>
+        prev.map((city) =>
+          city.id === cityId
+            ? { ...city, selected: updatedCity.selected }
+            : city
+        )
+      );
+
+      if (updatedCity.selected) {
+        setSelectedCities((prev) => [...prev, updatedCity]);
+      } else {
+        setSelectedCities((prev) => prev.filter((city) => city.id !== cityId));
+      }
+    } catch (error) {
+      console.error("Error toggling city selection:", error);
+    }
   };
 
   return {
     cities,
-    selectedCity,
+    selectedCities,
     loading,
     error,
-    selectCity,
+    toggleCitySelection,
   };
 }

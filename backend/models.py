@@ -1,17 +1,17 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from pymongo import MongoClient
+import os
 
-Base = declarative_base()
-engine = create_engine('sqlite:///cities.db', echo=True)
-Session = sessionmaker(bind=engine)
+# Check if running inside Docker
+if os.getenv("DOCKER_ENV") == "true":
+    MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongo:27017/")  # Docker MongoDB
+else:
+    MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")  # Local MongoDB
 
-class City(Base):
-    __tablename__ = 'cities'
+client = MongoClient(MONGO_URI)
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    latitude = Column(Float, nullable=False)
-    longitude = Column(Float, nullable=False)
+# Access the database and collection
+db = client["weather_app"]
+cities_collection = db["cities"]
 
-Base.metadata.create_all(engine)
+# Ensure indexing for faster queries
+cities_collection.create_index("name", unique=True)

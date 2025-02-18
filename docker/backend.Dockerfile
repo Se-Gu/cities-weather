@@ -3,13 +3,11 @@ FROM python:3.11-slim
 WORKDIR /app
 
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN python init_db.py
-
 EXPOSE 5000
 
-CMD ["flask", "run", "--host=0.0.0.0"]
+# Initialize the database before starting Flask
+CMD ["sh", "-c", "python init_db.py && flask run --host=0.0.0.0"]

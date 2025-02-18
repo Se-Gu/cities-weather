@@ -1,4 +1,5 @@
 export interface City {
+  selected: boolean;
   id: number;
   name: string;
   latitude: number;
