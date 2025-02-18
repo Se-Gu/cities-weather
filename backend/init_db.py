@@ -1,14 +1,35 @@
 import csv
 import os
+import time
 import psycopg2
 
 DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost/weather_app")
 
 CSV_FILE = "worldcities.csv"
 
+def wait_for_db():
+    """Retries database connection until it's available."""
+    retries = 10  # Try 10 times
+    for i in range(retries):
+        try:
+            conn = psycopg2.connect(DB_URL)
+            conn.close()
+            print("✅ Database is ready!")
+            return
+        except psycopg2.OperationalError:
+            print(f"⏳ Waiting for database... Attempt {i+1}/{retries}")
+            time.sleep(5)  # Wait 5 seconds before retrying
+    print("❌ Database did not become ready in time. Exiting.")
+    exit(1)
+
 def init_db():
+    wait_for_db()  # Ensure DB is ready before proceeding
+
     conn = psycopg2.connect(DB_URL)
     cur = conn.cursor()
+
+    # ✅ Enable `pg_trgm` extension (for fuzzy search)
+    cur.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm;")
 
     # Create table
     cur.execute("""
@@ -30,6 +51,10 @@ def init_db():
             ) STORED
         );
     """)
+
+     # ✅ Create GIN index on `name` for faster searches using `pg_trgm`
+    cur.execute("CREATE INDEX IF NOT EXISTS city_name_trgm_idx ON cities USING GIN (name gin_trgm_ops);")
+
 
     # Insert data
     with open(CSV_FILE, newline='', encoding="utf-8") as csvfile:

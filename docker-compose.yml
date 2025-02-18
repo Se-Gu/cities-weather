@@ -1,5 +1,9 @@
 version: "3.8"
 
+networks:
+  app_network: # Define a custom network
+    driver: bridge
+
 services:
   frontend:
     build:
@@ -8,9 +12,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:5000
+      - NEXT_PUBLIC_API_URL=http://localhost:5000 # Keep using backend hostname
     depends_on:
       - backend
+    networks:
+      - app_network # Attach to the network
 
   backend:
     build:
@@ -24,7 +30,9 @@ services:
       - DATABASE_URL=postgresql://postgres:password@postgres/weather_app
     depends_on:
       postgres:
-        condition: service_healthy
+        condition: service_healthy # ✅ Wait for PostgreSQL to be ready
+    networks:
+      - app_network
 
   postgres:
     image: postgres:14
@@ -38,7 +46,9 @@ services:
       POSTGRES_DB: weather_app
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
+    networks:
+      - app_network
+    healthcheck: # ✅ Ensures PostgreSQL is ready before backend starts
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
       retries: 5

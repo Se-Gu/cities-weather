@@ -33,10 +33,10 @@ def search_cities():
             COALESCE(population, 0) AS population,
             latitude, longitude
         FROM cities
-        WHERE search_vector @@ plainto_tsquery(%s)
-        ORDER BY COALESCE(population, 0) DESC
+        WHERE SIMILARITY(name, %s) > 0.2
+        ORDER BY SIMILARITY(name, %s) DESC, COALESCE(population, 0) DESC
         LIMIT %s;
-    """, (query, limit))
+    """, (query, query, limit))
 
 
     cities = cur.fetchall()
