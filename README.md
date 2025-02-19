@@ -11,14 +11,12 @@ This Weather App is a full-stack application that allows users to view weather i
 - Responsive design for various screen sizes
 - Frontend caching for improved performance
 
-
 ## Prerequisites
 
 - Node.js (v14 or later)
 - Python (v3.11 or later)
 - PostgreSQL
 - Docker and Docker Compose (for containerized setup)
-
 
 ## Project Structure
 
@@ -50,10 +48,10 @@ weather-app/
 #### Frontend Setup
 
 1. Navigate to the frontend directory:
+
 ```
 cd frontend
 ```
-
 
 2. Install dependencies:
 
@@ -61,13 +59,11 @@ cd frontend
 npm install
 ```
 
-
 3. Create a .env.local file in the frontend directory with the following content:
 
 ```
 NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
 ```
-
 
 4. Build the frontend:
 
@@ -75,15 +71,11 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
 npm run build
 ```
 
-
 5. Start the production server:
 
 ```
 npm start
 ```
-
-
-
 
 The frontend will be available at http://localhost:3000.
 
@@ -95,7 +87,6 @@ The frontend will be available at http://localhost:3000.
 cd backend
 ```
 
-
 2. Create a virtual environment and activate it:
 
 ```
@@ -103,13 +94,11 @@ python -m venv venv
 source venv/bin/activate  # On Windows, use venv\Scripts\activate
 ```
 
-
 3. Install dependencies:
 
 ```
 pip install -r requirements.txt
 ```
-
 
 4. Set up environment variables:
 
@@ -122,22 +111,17 @@ export OPENWEATHER_API_KEY=your_openweather_api_key
 
 Replace your_openweather_api_key with your actual OpenWeatherMap API key.
 
-
 5. Initialize the database:
 
 ```
 python init_db.py
 ```
 
-
 6. Start the Flask server:
 
 ```
 flask run
 ```
-
-
-
 
 The backend will be available at http://localhost:5000.
 
@@ -150,14 +134,10 @@ The backend will be available at http://localhost:5000.
 docker-compose up --build
 ```
 
-
-
-
 This command will build and start all the necessary containers (frontend, backend, and PostgreSQL).
 
 - The frontend will be available at http://localhost:3000
 - The backend will be available at http://localhost:5000
-
 
 To stop the containers, use:
 
@@ -172,12 +152,10 @@ docker-compose down
 3. Click on a city in the sidebar or on the map to view its current weather information.
 4. To remove a city from favorites, click the 'X' button next to the city name in the sidebar.
 
-
 ## Development
 
 - The frontend code is located in the frontend directory.
 - The backend code is located in the backend directory.
-
 
 ### Frontend Development
 
@@ -189,15 +167,11 @@ To run the frontend in development mode:
 cd frontend
 ```
 
-
 2. Start the development server:
 
 ```
 npm run dev
 ```
-
-
-
 
 This will start the Next.js development server with hot-reloading enabled.
 
@@ -211,14 +185,12 @@ To run the backend in development mode:
 cd backend
 ```
 
-
 2. Ensure your virtual environment is activated.
 3. Set the Flask environment to development:
 
 ```
 export FLASK_ENV=development
 ```
-
 
 4. Start the Flask development server:
 
@@ -234,7 +206,6 @@ This will start the Flask server in development mode with debug output and auto-
 - PATCH /api/cities/{city_id}/toggle-favorite: Toggle favorite status of a city
 - GET /api/cities/search: Search for cities
 - GET /api/weather: Get weather data for a specific location
-
 
 ## License
 

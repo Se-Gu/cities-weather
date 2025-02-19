@@ -38,8 +38,18 @@ export default function Page() {
     setSelectedCity(city);
   };
 
+  // New effect to handle removal of selected city
+  useEffect(() => {
+    if (
+      selectedCity &&
+      !favoriteCities.some((city) => city.id === selectedCity.id)
+    ) {
+      setSelectedCity(null);
+    }
+  }, [favoriteCities, selectedCity]);
+
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col md:flex-row h-screen">
       <Sidebar
         favoriteCities={favoriteCities}
         selectedCity={selectedCity?.name}
