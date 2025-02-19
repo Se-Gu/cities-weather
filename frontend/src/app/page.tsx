@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Map } from "../components/Map";
 import { Sidebar } from "../components/Sidebar";
-import { fetchSelectedCities } from "../lib/api";
+import { fetchFavoriteCities } from "../lib/api";
 
 interface City {
   id: number;
@@ -14,37 +14,43 @@ interface City {
 }
 
 export default function Page() {
-  const [cities, setCities] = useState<City[]>([]);
+  const [favoriteCities, setFavoriteCities] = useState<City[]>([]);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadSelectedCities() {
-      try {
-        const selectedCities = await fetchSelectedCities();
-        setCities(selectedCities);
-      } catch (error) {
-        console.error("Failed to load selected cities:", error);
-      }
+  const loadFavoriteCities = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const cities = await fetchFavoriteCities();
+      setFavoriteCities(cities);
+    } catch (error) {
+      console.error("Failed to load favorite cities:", error);
+    } finally {
+      setIsLoading(false);
     }
-
-    loadSelectedCities();
   }, []);
 
-  const handleCitySelect = (city: City) => {
+  useEffect(() => {
+    loadFavoriteCities();
+  }, [loadFavoriteCities]);
+
+  const handleCitySelect = (city: City | null) => {
     setSelectedCity(city);
   };
 
   return (
     <div className="flex h-screen">
       <Sidebar
+        favoriteCities={favoriteCities}
         selectedCity={selectedCity?.name}
         onCitySelect={handleCitySelect}
-        cities={cities}
+        onFavoriteCitiesChange={loadFavoriteCities}
       />
       <Map
-        cities={cities}
+        favoriteCities={favoriteCities}
         selectedCity={selectedCity}
         onCitySelect={handleCitySelect}
+        isLoading={isLoading}
       />
     </div>
   );

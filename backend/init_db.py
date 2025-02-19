@@ -45,7 +45,7 @@ def init_db():
             admin_name TEXT NOT NULL,
             capital TEXT,
             population BIGINT,
-            selected boolean DEFAULT false,
+            favorite boolean DEFAULT false,
             search_vector tsvector GENERATED ALWAYS AS (
                 to_tsvector('english', name || ' ' || country || ' ' || admin_name)
             ) STORED

@@ -86,3 +86,59 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom marker styles */
+.custom-marker {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.marker-pin {
+  width: 30px;
+  height: 30px;
+  border-radius: 50% 50% 50% 0;
+  background: #ff4136;
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 50%;
+  top: 50%;
+  margin: -15px 0 0 -15px;
+}
+
+.marker-name {
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.marker-selected {
+  transform: scale(1.2);
+}
+
+.marker-selected .marker-pin {
+  background: #4134f1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1) rotate(-45deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(-45deg);
+  }
+  100% {
+    transform: scale(1) rotate(-45deg);
+  }
+}
+
+.marker-selected .marker-pin {
+  animation: pulse 1s infinite;
+}

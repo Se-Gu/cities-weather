@@ -13,15 +13,22 @@ interface City {
 }
 
 interface MapProps {
-  cities: City[];
+  favoriteCities: City[];
   selectedCity: City | null;
-  onCitySelect: (city: City) => void;
+  onCitySelect: (city: City | null) => void;
+  isLoading: boolean;
 }
 
-export function Map({ cities, selectedCity, onCitySelect }: MapProps) {
+export function Map({
+  favoriteCities,
+  selectedCity,
+  onCitySelect,
+  isLoading,
+}: MapProps) {
   const mapContainer = React.useRef<HTMLDivElement>(null);
   const map = React.useRef<maplibregl.Map | null>(null);
   const markersRef = React.useRef<{ [key: number]: maplibregl.Marker }>({});
+  const [mapLoaded, setMapLoaded] = React.useState(false);
 
   React.useEffect(() => {
     if (map.current || !mapContainer.current) return;
@@ -49,7 +56,7 @@ export function Map({ cities, selectedCity, onCitySelect }: MapProps) {
           },
         ],
       },
-      center: [0, 0],
+      center: [0, 20],
       zoom: 2,
     });
 
@@ -62,24 +69,72 @@ export function Map({ cities, selectedCity, onCitySelect }: MapProps) {
       "bottom-right"
     );
 
-    // Add markers for all cities
-    cities.forEach((city) => {
+    // Set mapLoaded to true when the map is loaded
+    map.current.on("load", () => {
+      setMapLoaded(true);
+    });
+
+    // Cleanup function
+    return () => {
+      if (map.current) {
+        map.current.remove();
+      }
+    };
+  }, []);
+
+  const addMarkers = React.useCallback(() => {
+    if (!map.current) return;
+
+    // Remove existing markers
+    Object.values(markersRef.current).forEach((marker) => marker.remove());
+    markersRef.current = {};
+
+    // Add new markers
+    favoriteCities.forEach((city) => {
+      console.log(
+        `Adding marker for ${city.name} at [${city.longitude}, ${city.latitude}]`
+      );
+
+      // Create a custom marker element
+      const el = document.createElement("div");
+      el.className = "custom-marker";
+      el.innerHTML = `
+        <div class="marker-pin"></div>
+        <div class="marker-name">${city.name}</div>
+      `;
+
       const marker = new maplibregl.Marker({
-        color: "#4134F1",
+        element: el,
+        anchor: "bottom",
       })
         .setLngLat([city.longitude, city.latitude])
         .addTo(map.current!);
 
       // Add click event to the marker
-      marker.getElement().addEventListener("click", () => onCitySelect(city));
+      marker.getElement().addEventListener("click", () => {
+        if (selectedCity && selectedCity.id === city.id) {
+          onCitySelect(null); // Deselect if clicking the same marker
+        } else {
+          onCitySelect(city);
+        }
+      });
 
       markersRef.current[city.id] = marker;
     });
-  }, [cities, onCitySelect]);
+  }, [favoriteCities, onCitySelect, selectedCity]);
 
-  // Update map when a city is selected
+  // Update markers when favoriteCities changes, map is loaded, and data is not loading
   React.useEffect(() => {
-    if (map.current && selectedCity) {
+    if (mapLoaded && !isLoading && favoriteCities.length > 0) {
+      addMarkers();
+    }
+  }, [addMarkers, mapLoaded, isLoading, favoriteCities]);
+
+  // Update map when a city is selected or deselected
+  React.useEffect(() => {
+    if (!map.current) return;
+
+    if (selectedCity) {
       map.current.flyTo({
         center: [selectedCity.longitude, selectedCity.latitude],
         zoom: 10,
@@ -88,17 +143,38 @@ export function Map({ cities, selectedCity, onCitySelect }: MapProps) {
 
       // Highlight the selected marker
       Object.values(markersRef.current).forEach((marker) => {
-        marker.getElement().style.zIndex = "0";
+        const el = marker.getElement();
+        el.classList.remove("marker-selected");
       });
       if (markersRef.current[selectedCity.id]) {
-        markersRef.current[selectedCity.id].getElement().style.zIndex = "1";
+        const selectedMarkerEl =
+          markersRef.current[selectedCity.id].getElement();
+        selectedMarkerEl.classList.add("marker-selected");
       }
+    } else {
+      // If no city is selected, reset the view
+      map.current.flyTo({
+        center: [0, 20],
+        zoom: 2,
+        duration: 2000,
+      });
+
+      // Reset all marker styles
+      Object.values(markersRef.current).forEach((marker) => {
+        const el = marker.getElement();
+        el.classList.remove("marker-selected");
+      });
     }
   }, [selectedCity]);
 
   return (
     <div className="relative flex-1">
       <div ref={mapContainer} className="h-full w-full" />
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75">
+          <div className="text-2xl font-semibold">Loading...</div>
+        </div>
+      )}
       {selectedCity && (
         <div className="absolute left-4 top-4 flex items-center gap-4 rounded-2xl bg-white p-4 shadow-[0px_4px_10px_rgba(0,0,0,0.08),0px_10px_20px_rgba(0,0,0,0.12)]">
           <div className="flex flex-col gap-1">
