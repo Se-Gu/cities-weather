@@ -21,24 +21,58 @@ This Weather App is a full-stack application that allows users to view weather i
 ## Project Structure
 
 ```
-weather-app/
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── lib/
-│   │   └── app/
-│   ├── public/
-│   ├── package.json
-│   └── next.config.js
-├── backend/
-│   ├── app.py
-│   ├── init_db.py
-│   └── requirements.txt
-├── docker/
-│   ├── frontend.Dockerfile
-│   └── backend.Dockerfile
-├── docker-compose.yml
-└── README.md
+└── 📁cities-weather-main
+    └── 📁backend
+        └── app.py
+        └── init_db.py
+        └── requirements.txt
+        └── worldcities.csv
+    └── 📁docker
+        └── backend.Dockerfile
+        └── frontend.Dockerfile
+    └── 📁frontend
+        └── .gitignore
+        └── components.json
+        └── eslint.config.mjs
+        └── next.config.ts
+        └── package-lock.json
+        └── package.json
+        └── postcss.config.mjs
+        └── 📁public
+            └── file.svg
+            └── globe.svg
+            └── next.svg
+            └── vercel.svg
+            └── window.svg
+        └── 📁src
+            └── 📁app
+                └── favicon.ico
+                └── globals.css
+                └── layout.tsx
+                └── page.tsx
+            └── 📁components
+                └── AddFavoriteCity.tsx
+                └── Map.tsx
+                └── Sidebar.tsx
+                └── 📁ui
+                    └── button.tsx
+                    └── card.tsx
+                    └── input.tsx
+                    └── separator.tsx
+                    └── sheet.tsx
+                    └── sidebar.tsx
+                    └── skeleton.tsx
+                    └── tooltip.tsx
+            └── 📁hooks
+                └── use-mobile.tsx
+            └── 📁lib
+                └── api.ts
+                └── utils.ts
+        └── tailwind.config.ts
+        └── tsconfig.json
+    └── .gitignore
+    └── docker-compose.yml
+    └── README.md
 ```
 
 ## Building and Running the Project
@@ -100,16 +134,14 @@ source venv/bin/activate  # On Windows, use venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Set up environment variables:
+4. Create a .env.local file in the backend directory with the following content:
 
 ```
-export FLASK_ENV=development
-export FLASK_APP=app.py
-export DATABASE_URL=postgresql://postgres:password@localhost/weather_app
-export OPENWEATHER_API_KEY=your_openweather_api_key
+FLASK_ENV=development
+FLASK_APP=app.py
+DATABASE_URL=postgresql://username:password@localhost/weather_app (your local postgresql database connection string)
+OPENWEATHER_API_KEY=67d3fe8f1f652996ef0deda3269d9e6b (my own key which has a daily limit of 1000 calls)
 ```
-
-Replace your_openweather_api_key with your actual OpenWeatherMap API key.
 
 5. Initialize the database:
 
@@ -125,7 +157,7 @@ flask run
 
 The backend will be available at http://localhost:5000.
 
-### With Docker
+### With Docker (RECOMMENDED)
 
 1. Ensure Docker and Docker Compose are installed on your system.
 2. From the root directory of the project, run:
@@ -152,53 +184,6 @@ docker-compose down
 3. Click on a city in the sidebar or on the map to view its current weather information.
 4. To remove a city from favorites, click the 'X' button next to the city name in the sidebar.
 
-## Development
-
-- The frontend code is located in the frontend directory.
-- The backend code is located in the backend directory.
-
-### Frontend Development
-
-To run the frontend in development mode:
-
-1. Navigate to the frontend directory:
-
-```
-cd frontend
-```
-
-2. Start the development server:
-
-```
-npm run dev
-```
-
-This will start the Next.js development server with hot-reloading enabled.
-
-### Backend Development
-
-To run the backend in development mode:
-
-1. Navigate to the backend directory:
-
-```
-cd backend
-```
-
-2. Ensure your virtual environment is activated.
-3. Set the Flask environment to development:
-
-```
-export FLASK_ENV=development
-```
-
-4. Start the Flask development server:
-
-```
-flask run
-```
-
-This will start the Flask server in development mode with debug output and auto-reloading.
 
 ## API Endpoints
 
