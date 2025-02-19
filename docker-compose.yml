@@ -28,6 +28,7 @@ services:
       - FLASK_ENV=development
       - FLASK_APP=app.py
       - DATABASE_URL=postgresql://postgres:password@postgres/weather_app
+      - OPENWEATHER_API_KEY=67d3fe8f1f652996ef0deda3269d9e6b
     depends_on:
       postgres:
         condition: service_healthy # ✅ Wait for PostgreSQL to be ready

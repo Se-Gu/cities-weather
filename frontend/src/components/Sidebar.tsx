@@ -60,7 +60,7 @@ export function Sidebar({
           {favoriteCities.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
               <p className="text-lg text-gray-600 mb-4">
-                You haven't added any favorite cities yet.
+                You haven&apos;t added any favorite cities yet.
               </p>
               <button
                 className="flex items-center gap-2 rounded-lg bg-[#0D44C2] px-4 py-2 text-white"

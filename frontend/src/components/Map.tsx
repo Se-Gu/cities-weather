@@ -42,8 +42,6 @@ export function Map({
   const [weatherData, setWeatherData] = React.useState<WeatherData | null>(
     null
   );
-  const [weatherLoading, setWeatherLoading] = React.useState(false);
-
   React.useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
@@ -143,15 +141,12 @@ export function Map({
   // Fetch weather data when a city is selected
   React.useEffect(() => {
     if (selectedCity) {
-      setWeatherLoading(true);
       getWeather(selectedCity.latitude, selectedCity.longitude)
         .then((data) => {
           setWeatherData(data);
-          setWeatherLoading(false);
         })
         .catch((error) => {
           console.error("Failed to fetch weather data:", error);
-          setWeatherLoading(false);
         });
     } else {
       setWeatherData(null);
@@ -165,7 +160,7 @@ export function Map({
     if (selectedCity) {
       map.current.flyTo({
         center: [selectedCity.longitude, selectedCity.latitude],
-        zoom: 10,
+        zoom: 11,
         duration: 2000,
       });
 
