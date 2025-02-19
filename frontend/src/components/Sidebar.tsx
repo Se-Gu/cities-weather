@@ -31,48 +31,54 @@ export function Sidebar({
   const handleToggleFavorite = async (city: City) => {
     try {
       await toggleCityFavorite(city.id);
-      onFavoriteCitiesChange(); // Refetch favorites after toggling
+      onFavoriteCitiesChange();
+      setIsMobileMenuOpen(false); // Close sidebar when removing a city
     } catch (error) {
       console.error("Failed to toggle favorite status:", error);
     }
   };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+  const handleCitySelect = (city: City | null) => {
+    onCitySelect(city);
+    setIsMobileMenuOpen(false); // Close sidebar when selecting a city
+  };
+
+  const openAddModal = () => {
+    setIsAddModalOpen(true);
+    setIsMobileMenuOpen(false); // Close sidebar when opening the add modal
   };
 
   return (
     <>
-      <div className="md:hidden">
+      {/* Hide menu button when sidebar is open */}
+      {!isMobileMenuOpen && (
         <button
-          onClick={toggleMobileMenu}
-          className="fixed top-4 left-4 z-50 p-2 bg-white rounded-full shadow-md"
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="fixed top-4 left-4 z-50 p-2 bg-white rounded-full shadow-md md:hidden"
         >
           <Menu size={24} />
         </button>
-      </div>
+      )}
+
+      {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white transform transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white transition-transform duration-300 ease-in-out ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0 md:w-[320px] md:flex md:flex-col md:border-r md:border-gray-200`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex h-32 items-center justify-between px-4">
-            <div className="flex items-center justify-between w-full">
-              <h2 className="text-xl font-semibold text-[#2E3138]">
-                Favorite Cities
-              </h2>
-              <button
-                className="flex h-9 items-center gap-2 rounded-lg bg-[#0D44C2] px-3 py-1.5"
-                onClick={() => setIsAddModalOpen(true)}
-              >
-                <Plus className="h-4 w-4 text-white" />
-                <span className="text-lg leading-6 text-[#F1F5FE]">
-                  Add new
-                </span>
-              </button>
-            </div>
+            <h2 className="text-xl font-semibold text-[#2E3138]">
+              Favorite Cities
+            </h2>
+            <button
+              className="flex h-9 items-center gap-2 rounded-lg bg-[#0D44C2] px-3 py-1.5"
+              onClick={openAddModal}
+            >
+              <Plus className="h-4 w-4 text-white" />
+              <span className="text-lg leading-6 text-[#F1F5FE]">Add new</span>
+            </button>
           </div>
 
           {/* Content */}
@@ -84,7 +90,7 @@ export function Sidebar({
                 </p>
                 <button
                   className="flex items-center gap-2 rounded-lg bg-[#0D44C2] px-4 py-2 text-white"
-                  onClick={() => setIsAddModalOpen(true)}
+                  onClick={openAddModal}
                 >
                   <Plus className="h-4 w-4" />
                   <span>Add your first city</span>
@@ -101,7 +107,9 @@ export function Sidebar({
                   >
                     <button
                       onClick={() =>
-                        onCitySelect(selectedCity === city.name ? null : city)
+                        handleCitySelect(
+                          selectedCity === city.name ? null : city
+                        )
                       }
                       className={`flex-grow text-left ${
                         selectedCity === city.name
@@ -132,6 +140,7 @@ export function Sidebar({
           </div>
         </div>
       </div>
+
       <AddFavoriteCity
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}

@@ -198,32 +198,39 @@ export function Map({
           <div className="text-2xl font-semibold">Loading...</div>
         </div>
       )}
+      {/* Weather Card */}
       {selectedCity && weatherData && (
-        <div className="absolute left-4 top-4 flex items-center gap-4 rounded-2xl bg-white p-4 shadow-[0px_4px_10px_rgba(0,0,0,0.08),0px_10px_20px_rgba(0,0,0,0.12)]">
-          <div className="flex flex-col gap-1">
-            <div className="text-[30px] font-medium leading-7 tracking-[-0.2px] text-[#2A92C6]">
-              {weatherData.temperature.toFixed(1)}°C
+        <div className="absolute right-4 top-4 flex flex-col items-center rounded-2xl bg-white p-4 shadow-[0px_4px_10px_rgba(0,0,0,0.08),0px_10px_20px_rgba(0,0,0,0.12)]">
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-1">
+              <div className="text-[30px] font-medium leading-7 tracking-[-0.2px] text-[#2A92C6]">
+                {weatherData.temperature.toFixed(1)}°C
+              </div>
+              <div className="flex gap-1">
+                <span className="text-[13px] font-medium leading-[22px] tracking-[-0.2px] text-[#5D626F]">
+                  H:{weatherData.H.toFixed(1)}°
+                </span>
+                <span className="text-[13px] font-medium leading-[22px] tracking-[-0.2px] text-[#5D626F]">
+                  L:{weatherData.L.toFixed(1)}°
+                </span>
+              </div>
+              {/* Added Weather Description */}
+              <div className="text-[14px] font-medium leading-[22px] tracking-[-0.2px] text-[#5D626F] capitalize">
+                {weatherData.description}
+              </div>
             </div>
-            <div className="flex gap-1">
-              <span className="text-[13px] font-medium leading-[22px] tracking-[-0.2px] text-[#5D626F]">
-                H:{weatherData.H.toFixed(1)}°
-              </span>
-              <span className="text-[13px] font-medium leading-[22px] tracking-[-0.2px] text-[#5D626F]">
-                L:{weatherData.L.toFixed(1)}°
-              </span>
+            <div className="flex flex-1 flex-col items-end">
+              <Image
+                src={`https://openweathermap.org/img/wn/${weatherData.icon}.png`}
+                alt={weatherData.description}
+                width={50}
+                height={50}
+              />
             </div>
           </div>
-          <div className="flex flex-1 flex-col items-end">
-            <Image
-              src={`https://openweathermap.org/img/wn/${weatherData.icon}.png`}
-              alt={weatherData.description}
-              width={50}
-              height={50}
-            />
-            <span className="text-right text-base leading-[22px] tracking-[-0.2px] text-[#0E2E3F]">
-              {selectedCity.name}, {selectedCity.country}
-            </span>
-          </div>
+          <span className="mt-2 text-base leading-[22px] tracking-[-0.2px] text-[#0E2E3F]">
+            {selectedCity.name}, {selectedCity.country}
+          </span>
         </div>
       )}
     </div>
