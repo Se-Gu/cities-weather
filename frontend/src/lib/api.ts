@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 // Helper function to check if the browser supports the Cache API
 const isCacheSupported = () => {
@@ -63,27 +63,25 @@ export async function toggleCityFavorite(cityId: number) {
 }
 
 export async function searchCities(query: string) {
-  const cacheKey = `${API_BASE_URL}/api/cities/search?q=${encodeURIComponent(
+  const url = `${API_BASE_URL}/api/cities/search?q=${encodeURIComponent(
     query
   )}&limit=5`;
 
-  // Try to get cached data
-  const cachedData = await getCachedData(cacheKey);
-  if (cachedData) {
-    return cachedData;
-  }
+  // Directly fetch from API without caching
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Cache-Control": "no-store", // Ensure no browser caching
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+  });
 
-  // If not in cache, fetch from API
-  const response = await fetch(cacheKey);
   if (!response.ok) {
     throw new Error("Failed to search cities");
   }
-  const data = await response.json();
 
-  // Cache the result indefinitely
-  await setCachedData(cacheKey, data);
-
-  return data;
+  return response.json();
 }
 
 export async function getWeather(lat: number, lon: number) {
