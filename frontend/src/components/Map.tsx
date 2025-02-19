@@ -3,6 +3,8 @@
 import * as React from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { getWeather } from "../lib/api";
+import Image from "next/image";
 
 interface City {
   id: number;
@@ -19,6 +21,14 @@ interface MapProps {
   isLoading: boolean;
 }
 
+interface WeatherData {
+  temperature: number;
+  H: number;
+  L: number;
+  description: string;
+  icon: string;
+}
+
 export function Map({
   favoriteCities,
   selectedCity,
@@ -29,6 +39,10 @@ export function Map({
   const map = React.useRef<maplibregl.Map | null>(null);
   const markersRef = React.useRef<{ [key: number]: maplibregl.Marker }>({});
   const [mapLoaded, setMapLoaded] = React.useState(false);
+  const [weatherData, setWeatherData] = React.useState<WeatherData | null>(
+    null
+  );
+  const [weatherLoading, setWeatherLoading] = React.useState(false);
 
   React.useEffect(() => {
     if (map.current || !mapContainer.current) return;
@@ -91,10 +105,6 @@ export function Map({
 
     // Add new markers
     favoriteCities.forEach((city) => {
-      console.log(
-        `Adding marker for ${city.name} at [${city.longitude}, ${city.latitude}]`
-      );
-
       // Create a custom marker element
       const el = document.createElement("div");
       el.className = "custom-marker";
@@ -129,6 +139,24 @@ export function Map({
       addMarkers();
     }
   }, [addMarkers, mapLoaded, isLoading, favoriteCities]);
+
+  // Fetch weather data when a city is selected
+  React.useEffect(() => {
+    if (selectedCity) {
+      setWeatherLoading(true);
+      getWeather(selectedCity.latitude, selectedCity.longitude)
+        .then((data) => {
+          setWeatherData(data);
+          setWeatherLoading(false);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch weather data:", error);
+          setWeatherLoading(false);
+        });
+    } else {
+      setWeatherData(null);
+    }
+  }, [selectedCity]);
 
   // Update map when a city is selected or deselected
   React.useEffect(() => {
@@ -175,37 +203,28 @@ export function Map({
           <div className="text-2xl font-semibold">Loading...</div>
         </div>
       )}
-      {selectedCity && (
+      {selectedCity && weatherData && (
         <div className="absolute left-4 top-4 flex items-center gap-4 rounded-2xl bg-white p-4 shadow-[0px_4px_10px_rgba(0,0,0,0.08),0px_10px_20px_rgba(0,0,0,0.12)]">
           <div className="flex flex-col gap-1">
             <div className="text-[30px] font-medium leading-7 tracking-[-0.2px] text-[#2A92C6]">
-              2°C
+              {weatherData.temperature.toFixed(1)}°C
             </div>
             <div className="flex gap-1">
               <span className="text-[13px] font-medium leading-[22px] tracking-[-0.2px] text-[#5D626F]">
-                H:8°
+                H:{weatherData.H.toFixed(1)}°
               </span>
               <span className="text-[13px] font-medium leading-[22px] tracking-[-0.2px] text-[#5D626F]">
-                L:2°
+                L:{weatherData.L.toFixed(1)}°
               </span>
             </div>
           </div>
           <div className="flex flex-1 flex-col items-end">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M2 12H4M20 12H22M12 2V4M12 20V22M6.34 17.66L4.93 19.07M19.07 19.07L17.66 17.66M6.34 6.34L4.93 4.93M19.07 4.93L17.66 6.34"
-                stroke="#0E2E3F"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Image
+              src={`https://openweathermap.org/img/wn/${weatherData.icon}.png`}
+              alt={weatherData.description}
+              width={50}
+              height={50}
+            />
             <span className="text-right text-base leading-[22px] tracking-[-0.2px] text-[#0E2E3F]">
               {selectedCity.name}, {selectedCity.country}
             </span>

@@ -30,3 +30,13 @@ export async function searchCities(query: string) {
   }
   return response.json();
 }
+
+export async function getWeather(lat: number, lon: number) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/weather?lat=${lat}&lon=${lon}`
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch weather data");
+  }
+  return response.json();
+}
