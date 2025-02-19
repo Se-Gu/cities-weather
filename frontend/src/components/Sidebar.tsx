@@ -1,20 +1,21 @@
 "use client";
 import { Plus } from "lucide-react";
 
-const cities = [
-  { id: 1, name: "New York", coordinates: [-74.006, 40.7128] },
-  { id: 2, name: "London", coordinates: [-0.1276, 51.5074] },
-  { id: 3, name: "Tokyo", coordinates: [139.6917, 35.6895] },
-  { id: 4, name: "Istanbul", coordinates: [28.9784, 41.0082] },
-  { id: 5, name: "Rome", coordinates: [12.4964, 41.9028] },
-];
+interface City {
+  id: number;
+  name: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+}
 
 interface SidebarProps {
   selectedCity?: string;
-  onCitySelect?: (city: { name: string; coordinates: number[] }) => void;
+  onCitySelect: (city: City) => void;
+  cities: City[];
 }
 
-export function Sidebar({ selectedCity, onCitySelect }: SidebarProps) {
+export function Sidebar({ selectedCity, onCitySelect, cities }: SidebarProps) {
   return (
     <div className="flex w-[320px] flex-col border-r border-gray-200">
       <div className="flex flex-col">
@@ -35,7 +36,7 @@ export function Sidebar({ selectedCity, onCitySelect }: SidebarProps) {
             {cities.map((city) => (
               <button
                 key={city.id}
-                onClick={() => onCitySelect?.(city)}
+                onClick={() => onCitySelect(city)}
                 className={`flex h-[46px] items-center justify-between border-b border-[#E3E4E8] px-4 py-3 text-left ${
                   selectedCity === city.name
                     ? "bg-[#F1F5FE] font-semibold text-[#1051E8]"
